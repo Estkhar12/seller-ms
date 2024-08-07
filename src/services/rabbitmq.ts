@@ -1,26 +1,26 @@
-import amqp, { Connection, Channel } from 'amqplib'
+import amqplib from 'amqplib'
 
-let connection: Connection
-let channel: Channel
+const rabbitMqUrl = process.env.RABBITMQ_URL as string
 
-export const connectRabbitMQ = async () => {
+export const consumeMessages = async () => {
 	try {
-		connection = await amqp.connect(process.env.RABBITMQ_URL as string)
-		channel = await connection.createChannel()
+		const connection = await amqplib.connect(rabbitMqUrl)
+		const channel = await connection.createChannel()
+		await channel.assertQueue('seller', { durable: true })
 		console.log('Connected to RabbitMQ')
+		channel.consume(
+			'seller',
+			async (msg: any) => {
+				if (msg !== null) {
+					const message = JSON.parse(msg.content.toString())
+					channel.ack(msg)
+				}
+			},
+			{
+				noAck: false,
+			}
+		)
 	} catch (error) {
-		console.error('RabbitMQ connection error:', error)
-		process.exit(1)
+		console.error('Error in consuming messages:', error)
 	}
-}
-
-export const getChannel = (): Channel => {
-	if (!channel) throw new Error('RabbitMQ channel not established')
-	return channel
-}
-
-export const publishMessage = async (queue: string, message: any) => {
-	const ch = getChannel()
-	await ch.assertQueue(queue, { durable: true })
-	ch.sendToQueue(queue, Buffer.from(JSON.stringify(message)))
 }

@@ -8,10 +8,10 @@ import getAllProduct from '../controller/getAllProduct'
 const router = expres.Router()
 
 router.post('/add', addProduct)
-router.get('/get-detail', getProduct)
+router.get('/get-product', getProduct)
+router.get('/getAll-products', getAllProduct)
 router.patch('/update', updateProduct)
 router.delete('/delete', deleteProduct)
-router.get('/all-products', getAllProduct)
 
 const ProductRouter = router
 export default ProductRouter

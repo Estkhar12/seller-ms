@@ -4,9 +4,9 @@ import Product from '../../../models/product'
 
 const getProduct = async (req: Request, res: Response) => {
 	try {
-		const { userId } = req.user
+		const { _id } = req.user
 		const { productId } = req.query
-
+		console.log(productId)
 		if (!isValidObjectId(productId)) {
 			return res.status(400).json({ error: 'Invalid Product ID' })
 		}
@@ -15,7 +15,7 @@ const getProduct = async (req: Request, res: Response) => {
 			{
 				$match: {
 					_id: productId,
-					_createdBy: userId,
+					_createdBy: _id,
 				},
 			},
 			{

@@ -1,56 +1,77 @@
 import { Schema, Document, model } from 'mongoose'
 
-interface IProduct extends Document {
-	name: string
+export interface IProduct extends Document {
+	productName: string
 	price: number
 	mrp: number
 	discount?: number
 	stockAvailable: number
 	description: string
-	isActive: boolean
-	// _category: Schema.Types.ObjectId
-	// _createdBy: Schema.Types.ObjectId
+	isDeleted: boolean
+	isBlocked: boolean
+	_blockedBy?: Schema.Types.ObjectId
+	_category: Schema.Types.ObjectId
+	_createdBy: {
+		_id: Schema.Types.ObjectId
+		role: 'seller' | 'admin'
+	}
 }
 
 const productSchema: Schema = new Schema(
 	{
-		name: {
+		productName: {
 			type: String,
-			required: true,
+			required: [true, 'Product name is required!'],
 		},
 		description: {
 			type: String,
-			required: true,
+			required: [true, 'Description is required!'],
 		},
 		price: {
 			type: Number,
-			required: true,
+			required: [true, 'Price is required!'],
 		},
 		mrp: {
 			type: Number,
-			required: true,
+			required: [true, 'MRP is required!'],
 		},
 		discount: {
-			type: Number,
+			type: [Number, 'Discount is must be a number'],
 			default: undefined,
 		},
 		stockAvailable: {
 			type: Number,
-			required: true,
+			required: [true, 'Stock Available is required!'],
 			default: 0,
 		},
-		isActive: {
+		isDeleted: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
-		// _createdBy: {
-		// 	type: Schema.Types.ObjectId,
-		// 	ref: 'User',
-		// },
-		// _category: {
-		// 	type: Schema.Types.ObjectId,
-		// 	ref: 'Category',
-		// },
+		isBlocked: {
+			type: Boolean,
+			default: false,
+		},
+		_blockedBy: {
+			type: Schema.Types.ObjectId,
+			default: undefined,
+		},
+		_createdBy: {
+			_id: {
+				type: Schema.Types.ObjectId,
+				required: [true, 'Id is required'],
+			},
+			role: {
+				type: String,
+				enum: ['seller', 'admin'],
+				required: [true, 'Role is required!'],
+			},
+		},
+		_category: {
+			type: Schema.Types.ObjectId,
+			ref: 'Category',
+			required: [true, 'Category is required!'],
+		},
 	},
 	{
 		timestamps: true,
@@ -59,5 +80,4 @@ const productSchema: Schema = new Schema(
 )
 
 const Product = model<IProduct>('Product', productSchema)
-
 export default Product
