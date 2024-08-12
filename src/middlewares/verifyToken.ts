@@ -9,18 +9,18 @@ const verify_token = async (req: Request, res: Response, next: NextFunction) => 
 			return res.status(400).json({ error: 'Invalid token' })
 		}
 		const decode: any = jwt.verify(token, process.env.JWT_SECRET as string)
-		if (!decode || typeof decode._id !== 'string' || typeof decode.role !== 'string') {
-			return res.status(400).json({ error: 'Invalid token payload' })
-		}
+		console.log(decode)
 		const user = await User.findById(decode?._id)
-		if (user?.role !== 'seller') {
+		console.log(user)
+		if (user.role !== 'seller') {
 			return res.status(401).json({ error: 'Unauthorized Access.' })
 		}
 		req.user = user
 		next()
 	} catch (error) {
 		console.log('something went wront while verifing the token', error)
-		res.status(500).json({ error: error })
+		res.status(500).json({ error: error.message })
 	}
 }
+
 export default verify_token

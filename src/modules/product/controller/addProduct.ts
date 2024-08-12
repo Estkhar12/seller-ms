@@ -29,7 +29,7 @@ const addProduct = async (req: Request, res: Response) => {
 		})
 		return res.status(201).json({ message: 'Product added..', data: product })
 	} catch (error) {
-		return res.status(500).json({ error: error })
+		return res.status(500).json({ error: error.message })
 	}
 }
 

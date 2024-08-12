@@ -70,7 +70,6 @@ const productSchema: Schema = new Schema(
 		_category: {
 			type: Schema.Types.ObjectId,
 			ref: 'Category',
-			required: [true, 'Category is required!'],
 		},
 	},
 	{
